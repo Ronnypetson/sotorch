@@ -1,0 +1,94 @@
+import numpy as np
+from scipy.optimize import minimize
+import torch
+from .grad import jacobian, hessian
+
+
+class Minimizer:
+    def __init__(self, objective,
+                 device='cpu',
+                 dtype=torch.double):
+        '''
+        :param objective: a callable that receives a tensor of parameters and returns a scalar tensor.
+                        It should be end-to-end differentiable (e.g. composed of differentiable
+                        PyTorch functions).
+        '''
+        self._obj_tc = objective
+        self.device = device
+        self.dtype = dtype
+        self._args = None
+
+    def _obj_npy(self, x):
+        '''
+        Auxiliary objective function compatible with NumPy.
+        :param x: a tensor.
+        :return: the objective value at x to be minimized
+        '''
+        x = torch.from_numpy(x)
+        x = x.requires_grad_(True)
+        y = self._obj_tc(x, self._args)
+        y = y.detach().numpy()
+        return y
+    
+    def _jac_npy(self, x):
+        x = torch.from_numpy(x)
+        x = x.requires_grad_(True)
+        jac = jacobian(self._obj_tc(x, self._args), x)
+        jac = jac.detach().numpy()
+        return jac
+    
+    def _hess_npy(self, x):
+        x = torch.from_numpy(x)
+        x = x.requires_grad_(True)
+        hess = hessian(self._obj_tc(x, self._args), x)
+        hess = hess.detach().numpy()
+        return hess
+
+    def minimize(self, x0,
+                 bounds=None,
+                 options=None,
+                 *args):
+        x0 = x0.detach().numpy()
+        self._args = args
+
+        #res = minimize(self.objective,\
+        #               Tfoe0,method='BFGS',\
+        #               jac=True,\
+        #               options={'disp': True,\
+        #                        'maxiter':100,\
+        #                        'gtol':1e-8})
+
+        res = minimize(self._obj_npy,
+                       x0, args=args,
+                       method='L-BFGS-B',
+                       jac=self._jac_npy,
+                       hess=self._hess_npy,
+                       bounds=bounds,
+                       options=options)
+        
+        #res = minimize(self.objective,\
+        #               Tfoe0,method='Newton-CG',\
+        #               jac=True,\
+        #               options={'disp': False,\
+        #                        'maxiter':100,\
+        #                        'gtol':1e-8})
+        
+        #res = minimize(self.obj_npy,\
+        #               Tfoe0,method='Newton-CG',\
+        #               jac=self.jac_npy,\
+        #               hess=self.hess_npy,\
+        #               options={'disp': False,\
+        #                        'maxiter':100,\
+        #                        'gtol':1e-8})
+        
+        return res.x
+
+
+if __name__ == '__main__':
+    x, x_, d, R, t = gen_pts(3)
+    
+    opt = Minimizer(x, x_)
+    T0 = np.zeros(6)
+    foe0 = np.zeros(2)
+    with torch.autograd.set_detect_anomaly(False):
+        Tfoe = opt.minimize(T0, foe0)
