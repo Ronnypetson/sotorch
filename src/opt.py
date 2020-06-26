@@ -78,8 +78,10 @@ class Minimizer:
         #               options={'disp': False,\
         #                        'maxiter':100,\
         #                        'gtol':1e-8})
-        
-        return res.x
+
+        ans = res.x.reshape(x0.shape)
+        ans = torch.from_numpy(ans)
+        return ans
 
 
 if __name__ == '__main__':
@@ -89,7 +91,7 @@ if __name__ == '__main__':
     #dtype = torch.float
 
     opt = Minimizer(f)
-    x0 = torch.ones(10)
+    x0 = torch.ones(10, 10)
     args = (1, 2, 3)
     options = {'disp': True}
 
