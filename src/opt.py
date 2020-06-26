@@ -46,40 +46,39 @@ class Minimizer:
     def minimize(self, x0,
                  args=(),
                  bounds=None,
-                 options=None):
+                 options=None,
+                 batchwise=False):
         x0 = x0.detach().numpy()
 
-        #res = minimize(self.objective,\
-        #               Tfoe0,method='BFGS',\
-        #               jac=True,\
-        #               options={'disp': True,\
-        #                        'maxiter':100,\
-        #                        'gtol':1e-8})
+        if batchwise:
+            all_res = []
+            b = x0.shape[0]
+            if bounds is None:
+                bounds = [None] * b
+            if args == () or args == [] or args is None:
+                args = [None] * b
 
-        res = minimize(self._obj_npy,
-                       x0, args=args,
-                       method='Newton-CG',
-                       jac=self._jac_npy,
-                       hess=self._hess_npy,
-                       bounds=bounds,
-                       options=options)
-        
-        #res = minimize(self.objective,\
-        #               Tfoe0,method='Newton-CG',\
-        #               jac=True,\
-        #               options={'disp': False,\
-        #                        'maxiter':100,\
-        #                        'gtol':1e-8})
-        
-        #res = minimize(self.obj_npy,\
-        #               Tfoe0,method='Newton-CG',\
-        #               jac=self.jac_npy,\
-        #               hess=self.hess_npy,\
-        #               options={'disp': False,\
-        #                        'maxiter':100,\
-        #                        'gtol':1e-8})
+            for i, x0_ in enumerate(x0):
+                res = minimize(self._obj_npy,
+                               x0_, args=args[i],
+                               method='Newton-CG',
+                               jac=self._jac_npy,
+                               hess=self._hess_npy,
+                               bounds=bounds[i],
+                               options=options)
+                all_res.append(res.x)
+            res = np.array(all_res)
+        else:
+            res = minimize(self._obj_npy,
+                           x0, args=args,
+                           method='Newton-CG',
+                           jac=self._jac_npy,
+                           hess=self._hess_npy,
+                           bounds=bounds,
+                           options=options)
+            res = res.x
 
-        ans = res.x.reshape(x0.shape)
+        ans = res.reshape(x0.shape)
         ans = torch.from_numpy(ans)
         return ans
 
@@ -91,10 +90,19 @@ if __name__ == '__main__':
     #dtype = torch.float
 
     opt = Minimizer(f)
-    x0 = torch.ones(10, 10)
-    args = (1, 2, 3)
+    x0 = torch.randn(10, 10)
     options = {'disp': True}
+    bwise = True
+    args = (1, 2, 3)
+    bounds = None
+
+    if bwise:
+        args = [args] * x0.size(0)
+        bounds = [bounds] * x0.size(0)
 
     with torch.autograd.set_detect_anomaly(False):
-        x = opt.minimize(x0, args, options=options)
+        x = opt.minimize(x0, args,
+                         bounds=bounds,
+                         options=options,
+                         batchwise=bwise)
         print(x)

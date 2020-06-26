@@ -1,3 +1,6 @@
+''' Based on https://pytorch.org/docs/stable/autograd.html#functional-higher-level-api
+'''
+
 import torch
 
 
