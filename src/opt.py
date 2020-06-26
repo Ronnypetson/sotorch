@@ -84,7 +84,7 @@ class Minimizer:
 
 if __name__ == '__main__':
     def f(x, *y):
-        return torch.norm(x)
+        return torch.norm(x) + sum(y)
 
     #dtype = torch.float
 
@@ -93,6 +93,6 @@ if __name__ == '__main__':
     args = (1, 2, 3)
     options = {'disp': True}
 
-    with torch.autograd.set_detect_anomaly(True):
+    with torch.autograd.set_detect_anomaly(False):
         x = opt.minimize(x0, args, options=options)
         print(x)
