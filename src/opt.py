@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 import torch
-from .grad import jacobian, hessian
+from grad import jacobian, hessian
 
 
 class Minimizer:
@@ -16,9 +16,8 @@ class Minimizer:
         self._obj_tc = objective
         self.device = device
         self.dtype = dtype
-        self._args = None
 
-    def _obj_npy(self, x):
+    def _obj_npy(self, x, *args):
         '''
         Auxiliary objective function compatible with NumPy.
         :param x: a tensor.
@@ -26,30 +25,29 @@ class Minimizer:
         '''
         x = torch.from_numpy(x)
         x = x.requires_grad_(True)
-        y = self._obj_tc(x, self._args)
+        y = self._obj_tc(x, *args)
         y = y.detach().numpy()
         return y
     
-    def _jac_npy(self, x):
+    def _jac_npy(self, x, *args):
         x = torch.from_numpy(x)
         x = x.requires_grad_(True)
-        jac = jacobian(self._obj_tc(x, self._args), x)
+        jac = jacobian(self._obj_tc(x, *args), x)
         jac = jac.detach().numpy()
         return jac
     
-    def _hess_npy(self, x):
+    def _hess_npy(self, x, *args):
         x = torch.from_numpy(x)
         x = x.requires_grad_(True)
-        hess = hessian(self._obj_tc(x, self._args), x)
+        hess = hessian(self._obj_tc(x, *args), x)
         hess = hess.detach().numpy()
         return hess
 
     def minimize(self, x0,
+                 args=(),
                  bounds=None,
-                 options=None,
-                 *args):
+                 options=None):
         x0 = x0.detach().numpy()
-        self._args = args
 
         #res = minimize(self.objective,\
         #               Tfoe0,method='BFGS',\
@@ -60,7 +58,7 @@ class Minimizer:
 
         res = minimize(self._obj_npy,
                        x0, args=args,
-                       method='L-BFGS-B',
+                       method='Newton-CG',
                        jac=self._jac_npy,
                        hess=self._hess_npy,
                        bounds=bounds,
@@ -85,10 +83,16 @@ class Minimizer:
 
 
 if __name__ == '__main__':
-    x, x_, d, R, t = gen_pts(3)
-    
-    opt = Minimizer(x, x_)
-    T0 = np.zeros(6)
-    foe0 = np.zeros(2)
-    with torch.autograd.set_detect_anomaly(False):
-        Tfoe = opt.minimize(T0, foe0)
+    def f(x, *y):
+        return torch.norm(x)
+
+    #dtype = torch.float
+
+    opt = Minimizer(f)
+    x0 = torch.ones(10)
+    args = (1, 2, 3)
+    options = {'disp': True}
+
+    with torch.autograd.set_detect_anomaly(True):
+        x = opt.minimize(x0, args, options=options)
+        print(x)
