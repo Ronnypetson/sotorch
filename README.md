@@ -56,3 +56,4 @@ https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.htm
 
 https://pytorch.org/docs/stable/autograd.html#functional-higher-level-api
 
+https://gist.github.com/apaszke/226abdf867c4e9d6698bd198f3b45fb7
