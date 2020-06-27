@@ -1,4 +1,4 @@
-''' Based on https://pytorch.org/docs/stable/autograd.html#functional-higher-level-api
+''' Based on https://gist.github.com/apaszke/226abdf867c4e9d6698bd198f3b45fb7
 '''
 
 import torch
