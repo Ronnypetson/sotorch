@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 import torch
-from grad import jacobian, hessian
+from .grad import jacobian, hessian
 
 
 class Minimizer:
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     #dtype = torch.float
 
     opt = Minimizer(f)
-    x0 = torch.randn(2, 3)
+    x0 = torch.randn(2, 3, 4)
     options = {'disp': False}
     bwise = True
     args = (1, 2, 3)
