@@ -1,5 +1,5 @@
 # optorch
-Auxiliary second-order optimization tools compatible with PyTorch.
+Auxiliary second-order optimization tools compatible with PyTorch. Wrapper of part of scipy.optimize.minimize and based on PyTorch's autograd.
 
 ## Dependencies
 PyTorch >= 1.0
