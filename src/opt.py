@@ -201,10 +201,9 @@ if __name__ == '__main__':
     constraints = ()
     all_methods = ['Newton-CG', 'dogleg', 'trust-ncg',
                     'trust-krylov', 'trust-exact', 'trust-constr']
-    all_methods += ['CG', 'BFGS', 'Newton-CG', 'L-BFGS-B',
-                    'TNC', 'SLSQP', 'dogleg', 'trust-ncg',
-                    'trust-krylov', 'trust-exact', 'trust-constr']
-    all_methods += ['Nelder-Mead', 'Powell']
+    all_methods += ['CG', 'BFGS', 'L-BFGS-B',
+                    'TNC', 'SLSQP']
+    all_methods += ['Nelder-Mead', 'Powell', 'COBYLA']
 
     if bwise:
         args = [args] * x0.size(0)
