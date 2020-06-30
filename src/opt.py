@@ -45,7 +45,7 @@ class Minimizer:
         hess = hess.detach().numpy()
         return hess
 
-    def _minimize(self, x0, **kwargs):
+    def minimize(self, x0, **kwargs):
         args = kwargs['args']
         if 'method' in kwargs:
             method = kwargs['method']

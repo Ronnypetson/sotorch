@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     with torch.autograd.set_detect_anomaly(False):
         for method in all_methods:
-            x, _, _ = opt._minimize(x0, args=args,
+            x, _, _ = opt.minimize(x0, args=args,
                              method=method,
                              bounds=bounds,
                              options=options,
