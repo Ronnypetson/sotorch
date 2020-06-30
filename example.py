@@ -30,6 +30,6 @@ if __name__ == '__main__':
                              options=options,
                              constraints=constraints,
                              batchwise=bwise)
-            print(f'{method}: {x}')
+            print(f'{method}: {x} {opt.min_obj}')
             print('OK.')
             print()

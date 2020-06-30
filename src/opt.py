@@ -16,6 +16,7 @@ class Minimizer:
         self._obj_tc = objective
         self.device = device
         self.dtype = dtype
+        self.min_obj = float('inf')
 
     def _obj_npy(self, x, *args):
         '''
@@ -27,6 +28,7 @@ class Minimizer:
         x = x.requires_grad_(True)
         y = self._obj_tc(x, *args)
         y = y.detach().numpy()
+        self.min_obj = min(y, self.min_obj)
         return y
     
     def _jac_npy(self, x, *args):
@@ -42,45 +44,6 @@ class Minimizer:
         hess = hessian(self._obj_tc(x, *args), x)
         hess = hess.detach().numpy()
         return hess
-
-    def minimize(self, x0,
-                 args=(),
-                 bounds=None,
-                 options=None,
-                 batchwise=False):
-        x0 = x0.detach().numpy()
-
-        if batchwise:
-            all_res = []
-            b = x0.shape[0]
-            if bounds is None:
-                bounds = [None] * b
-            if args == () or args == [] or args is None:
-                args = [None] * b
-
-            for i, x0_ in enumerate(x0):
-                res = minimize(self._obj_npy,
-                               x0_, args=args[i],
-                               method='Newton-CG',
-                               jac=self._jac_npy,
-                               hess=self._hess_npy,
-                               bounds=bounds[i],
-                               options=options)
-                all_res.append(res.x)
-            res = np.array(all_res)
-        else:
-            res = minimize(self._obj_npy,
-                           x0, args=args,
-                           method='Newton-CG',
-                           jac=self._jac_npy,
-                           hess=self._hess_npy,
-                           bounds=bounds,
-                           options=options)
-            res = res.x
-
-        ans = res.reshape(x0.shape)
-        ans = torch.from_numpy(ans)
-        return ans
 
     def _minimize(self, x0, **kwargs):
         args = kwargs['args']
@@ -133,6 +96,7 @@ class Minimizer:
 
         suc = []
         msg = []
+        self.min_obj = float('inf')
         if batchwise:
             all_res = []
             b = x0.shape[0]
