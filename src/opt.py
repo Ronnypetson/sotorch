@@ -59,7 +59,7 @@ class Minimizer:
         ''' Performs optimization of objective function.
 
         :param x0: Initial values for parameters.
-        :param kwargs: same as in sklearn.minimize.
+        :param kwargs: same as in scipy.optimize.minimize.
         :return: a tuple of three elements containing the answer, success status and optimizer message.
         '''
         args = kwargs['args']
