@@ -4,7 +4,7 @@ Second-order optimization methods compatible with PyTorch. There is no need to i
 It is a wrapper of part of scipy.optimize.minimize and based on PyTorch's autograd.
 
 ## Dependencies
-PyTorch >= 1.0
+PyTorch >= 1.3.1
 
 SciPy >= 1.3.1
 

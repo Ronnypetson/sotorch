@@ -1,0 +1,11 @@
+MANIFEST.in
+README.md
+setup.py
+sotorch/__init__.py
+sotorch/grad.py
+sotorch/opt.py
+sotorch.egg-info/PKG-INFO
+sotorch.egg-info/SOURCES.txt
+sotorch.egg-info/dependency_links.txt
+sotorch.egg-info/requires.txt
+sotorch.egg-info/top_level.txt
