@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 import torch
-from .grad import jacobian, hessian
+from sotorch.grad import jacobian, hessian
 
 
 class Minimizer:
