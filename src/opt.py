@@ -32,6 +32,11 @@ class Minimizer:
         return y
     
     def _jac_npy(self, x, *args):
+        '''
+        Auxiliary Jacobian function compatible with NumPy.
+        :param x: a tensor.
+        :return: the Jacobian of the objective function w.r.t x.
+        '''
         x = torch.from_numpy(x)
         x = x.requires_grad_(True)
         jac = jacobian(self._obj_tc(x, *args), x)
@@ -39,6 +44,11 @@ class Minimizer:
         return jac
     
     def _hess_npy(self, x, *args):
+        '''
+        Auxiliary Hessian function compatible with NumPy.
+        :param x: a tensor.
+        :return: the Hessian of the objective function w.r.t x.
+        '''
         x = torch.from_numpy(x)
         x = x.requires_grad_(True)
         hess = hessian(self._obj_tc(x, *args), x)
@@ -46,6 +56,12 @@ class Minimizer:
         return hess
 
     def minimize(self, x0, **kwargs):
+        ''' Performs optimization of objective function.
+
+        :param x0: Initial values for parameters.
+        :param kwargs: same as in sklearn.minimize.
+        :return: a tuple of three elements containing the answer, success status and optimizer message.
+        '''
         args = kwargs['args']
         if 'method' in kwargs:
             method = kwargs['method']
@@ -102,7 +118,7 @@ class Minimizer:
             b = x0.shape[0]
 
             if method == 'trust-constr':
-                x0 = x0.reshape(b,-1)
+                x0 = x0.reshape(b, -1)
 
             if bounds is None:
                 bounds = [None] * b
@@ -149,36 +165,3 @@ class Minimizer:
         ans = res.reshape(x0_shape)
         ans = torch.from_numpy(ans)
         return ans, suc, msg
-
-if __name__ == '__main__':
-    def f(x, *y):
-        return torch.norm(x) + sum(y)
-
-    #dtype = torch.float
-
-    opt = Minimizer(f)
-    x0 = torch.randn(2, 3, 4)
-    options = {'disp': False}
-    bwise = True
-    args = (1, 2, 3)
-    bounds = None
-    constraints = ()
-    all_methods = ['Newton-CG', 'dogleg', 'trust-ncg',
-                    'trust-krylov', 'trust-exact', 'trust-constr']
-    all_methods += ['CG', 'BFGS', 'L-BFGS-B',
-                    'TNC', 'SLSQP']
-    all_methods += ['Nelder-Mead', 'Powell', 'COBYLA']
-
-    if bwise:
-        args = [args] * x0.size(0)
-        bounds = [bounds] * x0.size(0)
-
-    with torch.autograd.set_detect_anomaly(False):
-        for method in all_methods:
-            x, _, _ = opt._minimize(x0, args=args,
-                             method=method,
-                             bounds=bounds,
-                             options=options,
-                             constraints=constraints,
-                             batchwise=bwise)
-            print(f'{method}: OK.')

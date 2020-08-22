@@ -22,14 +22,14 @@ if __name__ == '__main__':
         args = [args] * x0.size(0)
         bounds = [bounds] * x0.size(0)
 
-    with torch.autograd.set_detect_anomaly(False):
+    with torch.autograd.set_detect_anomaly(True):
         for method in all_methods:
             x, _, _ = opt.minimize(x0, args=args,
-                             method=method,
-                             bounds=bounds,
-                             options=options,
-                             constraints=constraints,
-                             batchwise=bwise)
+                                   method=method,
+                                   bounds=bounds,
+                                   options=options,
+                                   constraints=constraints,
+                                   batchwise=bwise)
             print(f'{method}: {x} {opt.min_obj}')
             print('OK.')
             print()
