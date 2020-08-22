@@ -1,5 +1,5 @@
 # sotorch
-Second-order optimization methods compatible with PyTorch. There is no need to implement the jacobians or hessians if the objective function is end-to-end differentiable.
+Second-order optimization methods compatible with PyTorch. There is no need to implement the Jacobians or Hessians if the objective function is end-to-end differentiable.
 
 It is a wrapper of part of scipy.optimize.minimize and based on PyTorch's autograd.
 
