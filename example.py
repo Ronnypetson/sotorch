@@ -1,6 +1,7 @@
 import torch
 from src.opt import Minimizer
 
+
 if __name__ == '__main__':
     def f(x, *y):
         return torch.norm(x) + sum(y)

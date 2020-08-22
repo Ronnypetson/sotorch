@@ -5,17 +5,17 @@ from .grad import jacobian, hessian
 
 
 class Minimizer:
-    def __init__(self, objective,
-                 device='cpu',
-                 dtype=torch.double):
+    def __init__(self, objective):
         '''
+        Combination of scipy.optimize.minimize and PyTorch's autograd.
+
         :param objective: a callable that receives a tensor of parameters and returns a scalar tensor.
                         It should be end-to-end differentiable (e.g. composed of differentiable
                         PyTorch functions).
         '''
         self._obj_tc = objective
-        self.device = device
-        self.dtype = dtype
+        #self.device = device
+        #self.dtype = dtype
         self.min_obj = float('inf')
 
     def _obj_npy(self, x, *args):
