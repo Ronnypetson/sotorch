@@ -21,7 +21,7 @@ NumPy >= 1.17.2
 ## Usage
 ```python
 import torch
-from src.opt import Minimizer
+from sotorch.opt import Minimizer
 
 if __name__ == '__main__':
     def f(x, *y):

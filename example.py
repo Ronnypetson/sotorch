@@ -1,5 +1,5 @@
 import torch
-from src.opt import Minimizer
+from sotorch.opt import Minimizer
 
 
 if __name__ == '__main__':
